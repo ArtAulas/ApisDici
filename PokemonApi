@@ -1,0 +1,43 @@
+def nome_do_pokemon(numero):
+    r=requests.get(f"{site_pokeapi}/api/v2/pokemon/{numero}")
+    dici=r.json()
+    return dici['name']
+
+def numero_do_pokemon(nome):
+    lower_nome=nome.lower()
+    url=f'{site_pokeapi}/api/v2/pokemon-species/{lower_nome}'
+    r=requests.get(url)
+    if (r.status_code!=200):
+        raise PokemonNaoExisteException
+    dici=r.json()
+    return dici['id']
+
+def color_of_pokemon(nome):
+    nome=nome.lower()
+    url=f'{site_pokeapi}/api/v2/pokemon-species/{nome}'
+    r=requests.get(url)
+    if (r.status_code!=200):
+        raise PokemonNaoExisteException
+    dici=r.json()
+    return dici['color']['name']
+
+def cor_do_pokemon(nome):
+    chave=color_of_pokemon(nome)
+    return dic_cores[chave]
+
+def tipos_do_pokemon(nome):
+    nome=nome.lower()
+    url=f'{site_pokeapi}/api/v2/pokemon/{nome}'
+    r=requests.get(url)
+    if (r.status_code!=200):
+        raise PokemonNaoExisteException
+    dici=r.json()
+    tipos=dici['types']
+    dtipos=[]
+    nr=0
+    while nr!=len(tipos):
+        nome_en=tipos[nr]['type']['name']
+        nome_pt=dic_tipos[nome_en]
+        dtipos.append(nome_pt)
+        nr+=1
+    return dtipos
