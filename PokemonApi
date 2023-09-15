@@ -22,8 +22,8 @@ def color_of_pokemon(nome):
     return dici['color']['name']
 
 def cor_do_pokemon(nome):
-    chave=color_of_pokemon(nome)
-    return dic_cores[chave]
+    color=color_of_pokemon(nome)
+    return dic_cores[color]
 
 def tipos_do_pokemon(nome):
     nome=nome.lower()
@@ -32,12 +32,43 @@ def tipos_do_pokemon(nome):
     if (r.status_code!=200):
         raise PokemonNaoExisteException
     dici=r.json()
-    tipos=dici['types']
-    dtipos=[]
+    types=dici['types']
+    ltipos=[]
     nr=0
-    while nr!=len(tipos):
-        nome_en=tipos[nr]['type']['name']
+    while nr!=len(types):
+        nome_en=types[nr]['type']['name']
         nome_pt=dic_tipos[nome_en]
-        dtipos.append(nome_pt)
+        ltipos.append(nome_pt)
         nr+=1
-    return dtipos
+    return ltipos
+
+
+def evolucao_anterior(nome):
+    nome=nome.lower()
+    url=f'{site_pokeapi}/api/v2/pokemon-species/{nome}'
+    r=requests.get(url)
+    if (r.status_code!=200):
+        raise PokemonNaoExisteException
+    dici=r.json()
+    if (type(dici['evolves_from_species'])!=dict):
+        return None
+    return dici['evolves_from_species']['name']
+
+def nivel_do_pokemon(nome, experiencia):
+    nome=nome.lower()
+    url=f'{site_pokeapi}/api/v2/pokemon-species/{nome}'
+    r=requests.get(url)
+    if (r.status_code!=200):
+        raise PokemonNaoExisteException
+    dici=r.json()
+
+    url2=dici['growth_rate']['url']
+    r2=requests.get(url2)
+    dici_growth=r2.json()
+    nr=0
+    while nr < len(dici_growth['levels']):
+        if (experiencia<dici_growth['levels'][nr]['experience']):
+            break
+        else:
+            nr+=1
+    return dici_growth['levels'][nr-1]['level']
