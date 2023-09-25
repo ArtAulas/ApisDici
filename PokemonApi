@@ -86,11 +86,9 @@ def cadastrar_pokemon(nome_treinador, apelido_pokemon, tipo_pokemon, experiencia
     url=f'{site_pokeapi}/api/v2/pokemon/{tipo_pokemon_lower}'
     r1=requests.get(url)
     if r1.status_code==404:raise PokemonNaoExisteException()
-    
-    json = {'tipo': tipo_pokemon,'experiencia' : experiencia}
-    
+
     url2=f'{site_treinador}/treinador/{nome_treinador}/{apelido_pokemon}'
-    r2=requests.put(url2,json)
+    r2=requests.put(url2,json = {'tipo': tipo_pokemon,'experiencia' : experiencia})
     if r2.status_code==404:raise TreinadorNaoCadastradoException()
     if r2.status_code==409:raise PokemonJaCadastradoException()
     assert r2.status_code==202
