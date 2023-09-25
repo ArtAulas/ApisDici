@@ -1,0 +1,94 @@
+def nome_do_pokemon(numero):
+    r=requests.get(f"{site_pokeapi}/api/v2/pokemon/{numero}")
+    dici=r.json()
+    return dici['name']
+
+def numero_do_pokemon(nome):
+    lower_nome=nome.lower()
+    url=f'{site_pokeapi}/api/v2/pokemon-species/{lower_nome}'
+    r=requests.get(url)
+    if (r.status_code!=200):
+        raise PokemonNaoExisteException
+    dici=r.json()
+    return dici['id']
+
+def color_of_pokemon(nome):
+    nome=nome.lower()
+    url=f'{site_pokeapi}/api/v2/pokemon-species/{nome}'
+    r=requests.get(url)
+    if (r.status_code!=200):
+        raise PokemonNaoExisteException
+    dici=r.json()
+    return dici['color']['name']
+
+def cor_do_pokemon(nome):
+    color=color_of_pokemon(nome)
+    return dic_cores[color]
+
+def tipos_do_pokemon(nome):
+    nome=nome.lower()
+    url=f'{site_pokeapi}/api/v2/pokemon/{nome}'
+    r=requests.get(url)
+    if (r.status_code!=200):
+        raise PokemonNaoExisteException
+    dici=r.json()
+    types=dici['types']
+    ltipos=[]
+    nr=0
+    while nr!=len(types):
+        nome_en=types[nr]['type']['name']
+        nome_pt=dic_tipos[nome_en]
+        ltipos.append(nome_pt)
+        nr+=1
+    return ltipos
+
+
+def evolucao_anterior(nome):
+    nome=nome.lower()
+    url=f'{site_pokeapi}/api/v2/pokemon-species/{nome}'
+    r=requests.get(url)
+    if (r.status_code!=200):
+        raise PokemonNaoExisteException
+    dici=r.json()
+    if (type(dici['evolves_from_species'])!=dict):
+        return None
+    return dici['evolves_from_species']['name']
+
+def nivel_do_pokemon(nome, experiencia):
+    nome=nome.lower()
+    url=f'{site_pokeapi}/api/v2/pokemon-species/{nome}'
+    r=requests.get(url)
+    if (r.status_code!=200):
+        raise PokemonNaoExisteException
+    dici=r.json()
+
+    url2=dici['growth_rate']['url']
+    r2=requests.get(url2)
+    dici_growth=r2.json()
+    nr=0
+    while nr < len(dici_growth['levels']):
+        if (experiencia<dici_growth['levels'][nr]['experience']):
+            break
+        else:
+            nr+=1
+    return dici_growth['levels'][nr-1]['level']
+
+def cadastrar_treinador(nome):
+    url=f'{site_treinador}/treinador/{nome}'
+    r=requests.put(url)
+    status=r.status_code
+    if status==202:
+        return True
+    return False
+
+def cadastrar_pokemon(nome_treinador, apelido_pokemon, tipo_pokemon, experiencia):
+    tipo_pokemon_lower=tipo_pokemon.lower()
+    url=f'{site_pokeapi}/api/v2/pokemon/{tipo_pokemon_lower}'
+    r1=requests.get(url)
+    if r1.status_code==404:raise PokemonNaoExisteException()
+
+    url2=f'{site_treinador}/treinador/{nome_treinador}/{apelido_pokemon}'
+    r2=requests.put(url2,json = {'tipo': tipo_pokemon,'experiencia' : experiencia})
+    if r2.status_code==404:raise TreinadorNaoCadastradoException()
+    if r2.status_code==409:raise PokemonJaCadastradoException()
+    assert r2.status_code==202
