@@ -330,15 +330,16 @@ Sua função só vai receber parênteses, colchetes e chaves.
 Não precisa se preocupar com nenhum outro caractere
 '''
 
-
-def balanceada(string):
-    pilha=[]
-    corres={
+corres={
         ')':'(',
         ']':'[',
         '}':'{',
         '>':'<'
     }
+
+def balanceada(string):
+    pilha=[]
+    
     for simb in string:
         if simb in corres.keys():
             tira=pilha.pop() 
