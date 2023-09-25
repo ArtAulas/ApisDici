@@ -72,3 +72,25 @@ def nivel_do_pokemon(nome, experiencia):
         else:
             nr+=1
     return dici_growth['levels'][nr-1]['level']
+
+def cadastrar_treinador(nome):
+    url=f'{site_treinador}/treinador/{nome}'
+    r=requests.put(url)
+    status=r.status_code
+    if status==202:
+        return True
+    return False
+
+def cadastrar_pokemon(nome_treinador, apelido_pokemon, tipo_pokemon, experiencia):
+    tipo_pokemon_lower=tipo_pokemon.lower()
+    url=f'{site_pokeapi}/api/v2/pokemon/{tipo_pokemon_lower}'
+    r1=requests.get(url)
+    if r1.status_code==404:raise PokemonNaoExisteException()
+    
+    json = {'tipo': tipo_pokemon,'experiencia' : experiencia}
+    
+    url2=f'{site_treinador}/treinador/{nome_treinador}/{apelido_pokemon}'
+    r2=requests.put(url2,json)
+    if r2.status_code==404:raise TreinadorNaoCadastradoException()
+    if r2.status_code==409:raise PokemonJaCadastradoException()
+    assert r2.status_code==202
