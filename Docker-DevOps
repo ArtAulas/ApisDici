@@ -1,0 +1,18 @@
+*arquivo qualquer*
+
+criar um arquivo 'DOCKERFILE' na mesma pasta
+
+/*
+from node:alpine
+copy . /app
+WORKDIR /app
+cmd node teste.js
+*/->comandos para ir no dockerfile
+
+docker build -t app . ->fazer o build da imagem app
+docker run app ->rodar a imagem app
+
+docker tag app:latest arthurcarel/si3a-teste:latest ->adicionar o tag 'latest' à imagem app
+docker push arthurcarel/si3a-teste:latest ->"empurar" a imagem ao repositório 'si3a-teste'
+docker pull robolicar/ads3.si3 ->"puxar" a imagem do repositório ads3.si3
+
