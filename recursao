@@ -40,9 +40,34 @@ def eh_lista(a):
 def acha_segredo(lista):
     if 'segredo' in lista:
         return True
-    for valor in lista:
-        if eh_lista(valor):
-            lista_menor=acha_segredo(valor)
-            if lista_menor:
-                return lista_menor
+    
+    for n in lista:
+        if type(n)==list:
+            if acha_segredo(n):
+                return True
     return False
+
+def conta_ll(lista):
+    numeros=0
+    for n in lista:
+        if type(n)==list:
+            numeros+=conta_ll(n)
+        else:
+            numeros+=1
+    return numeros
+
+def anagramas(palavra):
+    if len(palavra)==2:
+        return [palavra, palavra[1]+palavra[0]]
+    
+    lista_final=[]
+    lista_a=anagramas(palavra[1:])
+    for a in lista_a:
+        lista_final.append(palavra[0]+a)
+        lista_final.append(a+palavra[0])
+        for l in a:
+            novo=a[:a.index(l)+1]+palavra[0]+a[a.index(l)+1:]
+            if novo not in lista_final:
+                lista_final.append(novo)
+
+    return lista_final
