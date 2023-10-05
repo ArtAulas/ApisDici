@@ -160,22 +160,32 @@ def excluir_pokemon(nome_treinador, apelido_pokemon):
         if 'Pokémon' in texto:
             raise PokemonNaoCadastradoException
 
-def evolucoes_proximas(nome):
+def busca_evolucao(dici,nome):#funcao que será usada pela evolucoes_proximas. Recursiva
+    evolucao=[]
+    if len(dici['evolves_to'])==0:
+        return evolucao
+    
+    if dici['species']['name']==nome:
+        for evolucoes in dici['evolves_to']:
+            evolucao.append(evolucoes['species']['name'])
+
+    else:
+        for evolucoes in dici['evolves_to']:
+            parcial=busca_evolucao(evolucoes,nome)
+            for p in parcial:
+                evolucao.append(p)
+
+    return evolucao
+
+def evolucoes_proximas(nome):#funcao que será rodada nos testes
     nome=nome.lower()
     url=f'{site_pokeapi}/api/v2/pokemon-species/{nome}'
     r=requests.get(url)
-
     if r.status_code!=200:
         raise PokemonNaoExisteException
     
     dici=r.json()
     url2=dici['evolution_chain']['url']
-
     r2=requests.get(url2)
     dici2=r2.json()
-
-    evolucoes=[]
-    for nr in dici2['chain']['evolves_to']:
-        evol=nr['species']['name']
-        evolucoes.append(evol)
-    return evolucoes
+    return busca_evolucao(dici2['chain'],nome)
