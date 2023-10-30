@@ -406,16 +406,17 @@ dicas:
 '''
 def palindromo(string):
     pilha=[]
-    pilha2=[]
     nro=0
 
     for letra in string:
-        if nro<(len(string)/2):
+        if nro<(int(len(string)/2)):
             pilha.append(letra)
         if nro>=(len(string)/2):
-            pilha2.append(letra)
+            comp=pilha.pop()
+            if letra!=comp:
+                return False
         nro+=1
-    return pilha
+    return True
 
 palindromo('banana')
 palindromo('abacate')
