@@ -238,6 +238,9 @@ def encaixa(abre, fecha):
     if abre=="[":
         if fecha=="]":
             return True
+    if abre=="<":
+        if fecha==">":
+            return True
     return False
 
 '''
@@ -330,24 +333,28 @@ Sua função só vai receber parênteses, colchetes e chaves.
 Não precisa se preocupar com nenhum outro caractere
 '''
 
-corres={
-        ')':'(',
-        ']':'[',
-        '}':'{',
-        '>':'<'
-    }
+listaux=['[',']','{','}','(',')','<','>']
 
 def balanceada(string):
     pilha=[]
-    
-    for simb in string:
-        if simb in corres.keys():
-            tira=pilha.pop() 
-            if tira!=corres[simb]:
-                return False
-        else:
-            pilha.append(simb)
-    return True
+    max=len(pilha)
+
+    for simbol in string:
+        if simbol in listaux:
+            if len(pilha)>0:
+                if encaixa(pilha[-1],simbol):
+                    pilha.pop()
+                else:
+                    pilha.append(simbol)
+            else:
+                pilha.append(simbol)
+        if len(pilha)>max:
+            max=len(pilha)
+
+    if (len(pilha)==0):
+        fotografa(max)
+        return True
+    return False
 
 '''
 EXERCICIO
@@ -398,7 +405,20 @@ dicas:
     
 '''
 def palindromo(string):
-    return True
+    pilha=[]
+    pilha2=[]
+    nro=0
+
+    for letra in string:
+        if nro<(len(string)/2):
+            pilha.append(letra)
+        if nro>=(len(string)/2):
+            pilha2.append(letra)
+        nro+=1
+    return pilha
+
+palindromo('banana')
+palindromo('abacate')
 
 '''
 EXERCICIO
